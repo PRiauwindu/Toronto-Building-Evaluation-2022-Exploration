@@ -1,10 +1,345 @@
 ---
 title: "Toronto Building Evaluation 2022"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+    encoding=encoding,
+    output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Putranegara Riauwindu"
 date: "2023-03-12"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Exploration and Visualization
+
+Importing relevant libraries
+
+```{r Importing Library, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(stats)
+library(naniar)
+library(visdat)
+library(VIM)
+library(DT)
+library(lubridate)
+library(forcats)
+library(leaflet)
+```
+
+Importing Toronto Dataset and Checking the overall structure of the dataset using `str()` function. The dataset is also publicly available for download at https://open.toronto.ca/dataset/apartment-building-evaluation/ 
+
+```{r Importing dataset}
+data <- read.csv("D:/0. Master Degree/1. Boston University MSABA 2022/0. Semester Courses/2. Spring 2023/4. AD699 Data Mining/Assignment/Assignment 1/apartments_toronto.csv")
+```
+
+```{r Examining dataset}
+str(data)
+paste("Toronto dataset dimension (rows):", dim(data)[1])
+paste("Toronto dataset dimension (columns):", dim(data)[2])
+```
+
+`str()` function returned the "structure" information about the Toronto apartments dataset, including its type and content, and provides a concise way to examine the properties of the Toronto Apartment dataset. The Toronto apartments dataset contains **11651 observations (rows) and 40 variables (columns)**
+
+For this analysis, i will focus on the York South-Weston ward in Toronto.Filtering the dataset using `filter()` function to only contain the York South-Weston ward
+
+```{r Filtering Dataset}
+# Changing the ward attribute into categorical
+data$WARDNAME <- as.factor(data$WARDNAME)
+
+# Checking ward unique values to ensure correct ward spelling
+unique(data$WARDNAME)
+
+# Filtering the data and ensuring that the data only contain York South-Weston ward
+york_south_weston <- data %>%
+  filter(WARDNAME=="York South-Weston")
+summary(york_south_weston$WARDNAME)
+paste("York South-Weston data rows:", dim(york_south_weston)[1])
+paste("York South-Weston data columns:", dim(york_south_weston)[2])
+```
+
+The filtered data *york_south_weston* only contains York South-Weston ward data and has **836 observation(rows) and 40 attributes(columns)**
+
+Before diving deep into the dataset, we first need to tidy the data, especially for the NAs value in *york_south_weston* dataset.
+
+To check for NAs value, `apply()` and `is.na()` function could be used to check for NAs value in each attribute
+
+```{r Checking for NAs Value}
+# Tabulating the NAs Value, including the percentage from the total observation
+york_south_weston_na <- apply(X = is.na(york_south_weston), MARGIN = 2, FUN = sum)
+york_south_weston_na <- data.frame(count_na=york_south_weston_na, percentage = (york_south_weston_na/dim(york_south_weston)[1]) %>% round(4))
+york_south_weston_na
+
+# Summing the NAs value in the York South-Weston dataset
+paste("The sum of the NA values in york_south_weston is:", sum(york_south_weston_na$count_na))
+```
+The above results returned the tabulated NAs value in each of the attributes within the dataset. This was done by applying `is.na()` function in conjunction with `sum` function, and using `apply` function with `MARGIN=2` to apply it to the entire attributes. The `is.na` function will return the Boolean result whether each row in the dataset equals to NA value or not.
+
+The percentage of NA value in each attribute was also presented in the table above by dividing the total NA value with the total observation within that specific attributes.
+
+The total number of NA value in York South-Weston dataset is calculated to be **2834** observations.
+
+Variables with missing values are: *YEAR_REGISTERED*, *YEAR_EVALUATED*, *YEAR_BUILT*, *LAUNDRY_ROOMS*, *GARBAGE_CHUTE_ROOMS*, *ELEVATORS*, *STORAGE_AREAS_LOCKERS*, *GRAFFITI*, *EXTERIOR_GROUNDS*, *BALCONY_GUARDS*, *WATER_PEN_EXT_BLDG_ELEMENTS*, *PARKING AREA*, *OTHER_FACILITIES*, *LATITUDE*, *LONGITUDE*, *X*, and *Y*.
+
+```{r Isolating variables with NA value}
+york_south_weston_na[york_south_weston_na$count_na > 0,]
+```
+
+Three selected columns with missing values, *YEAR_REGISTERED*, *YEAR_EVALUATED*, *YEAR_BUILT*, might be missing possibly due to the building is quite old in terms of age so that there was no proper documentation in terms of when it was build and when it was actually registered to the government. The other possible explanation might be because of the human error (forget to note the registration, evaluation, and built year).
+
+The NAs value could also be visualized using the `naniar` and `visdat` library
+
+```{r visualizing NA value using naniar library, fig.align='center'}
+vis_dat(york_south_weston)
+```
+
+This visualization provides a great detail on each observation and its type for each attributes. Since the dataset contains lots of attribute (40 attributes), the label for each attributes does not clearly presented and overlapping with each other. Below graph might also be used to visualize the missing value in the dataset.
+
+```{r visualizing NA value using naniar library 2}
+gg_miss_var(york_south_weston) + ggtitle("Missing Values Plot")
+```
+
+From the missing value result above, there are four columns with more than 50% missing value which are *GARBAGE_CHUTE_ROOMS*, *ELEVATORS*, *STORAGE_AREAS_LOCKERS*, and *OTHER_FACILITIES*. To make the analysis more "user-friendly", these three columns will be removed from the dataset. Below code was used to remove those columns.
+
+```{r removing columns with missing value more than 50 pct}
+york_south_weston <- york_south_weston %>%
+  select(-GARBAGE_CHUTE_ROOMS, -ELEVATORS, -STORAGE_AREAS_LOCKERS, -OTHER_FACILITIES)
+
+#Checking whether the columns have been removed
+colnames(york_south_weston)
+```
+The four columns with missing value percentage >50% have been removed from the dataset.
+
+Based on the dataset description, column *EVALUATION_COMPLETED_ON* contains date type of data, bu R classified the type of the data within the column as **character(chr)** type. Conversion needs to be performed first before moving further with the dataset analysis. 
+
+Below code is used to convert the data type in column *EVALUATION_COMPLETED_ON* to dates:
+
+```{r Converting column to date type}
+york_south_weston$EVALUATION_COMPLETED_ON <- as.Date(york_south_weston$EVALUATION_COMPLETED_ON, format = "%Y-%m-%d")
+str(york_south_weston$EVALUATION_COMPLETED_ON)
+```
+The *EVALUATION_COMPLETED_ON* variable have been converted to dates format.
+
+Now that the dataset has been cleaned and tidied, lets do some quick data exploration. Since my birth month is January, i am interested to see how many inspections were done at York South-Weston ward on January. Below code is used to find the number of inspection done in York South-Weston ward apartments on January:
+
+```{r checking the inspections done on January}
+york_south_weston <- york_south_weston %>%
+  mutate(Month = as.integer(format(york_south_weston$EVALUATION_COMPLETED_ON, "%m")))%>%
+  mutate(jan_inspection = ifelse(Month==1, 1,0))
+
+paste("Number of Inspection on January:", sum(york_south_weston$jan_inspection))
+```
+There were **60 inspections** made on January for the Apartment in Toronto.
+
+### Checking Summary Statistics
+
+Lets check for another summary statistics for some of the attributes that were being inspected:
+
+```{r checking summary statistics, fig.align='center'}
+# Median number of confirmed storey
+paste("Median number of confirmed storey in York South-Weston:", median(york_south_weston$CONFIRMED_STOREYS))
+
+# Mean number of confirmed storey
+paste("Mean number of confirmed storey in York South-Weston:", mean(york_south_weston$CONFIRMED_STOREYS))
+
+# Checking for the distribution of the number of confirmed storey
+hist(york_south_weston$CONFIRMED_STOREYS, breaks=10, main="Histogram of Confirmed Storeys", xlab="Value Interval")
+```
+
+The value of mean and median are different for the *CONFIRMED_STOREYS* variable within the York South-Weston apartment dataset. Based on the histogram plotted above, the difference might be due to the distribution is heavily skewed to the right tail with the majority of the data point lies in the left tail. In other words, the "average-confirmed-storey" number of units is 4, while the average "confirmed-storey-number-of-units" is 6.99. This might indicate the presence of outlier.
+
+### Checking for the percentage of apartments in need of inspection 
+
+I also interested to find the percentage of apartments that needs to be inspected within 3 years. Below code is used to do that:
+
+```{r checking apartments in need of inspection within 3 year}
+# Changing the RESULTS OF SCORE variable to be categorical
+york_south_weston$RESULTS_OF_SCORE <- as.factor(york_south_weston$RESULTS_OF_SCORE)
+
+# Checking for the unique value within the RESULT OF SCORE variable
+unique(york_south_weston$RESULTS_OF_SCORE)
+
+# Summing the number of buildings with result Evaluation needs to be conducted in 3 years
+york_south_weston <- york_south_weston %>%
+  mutate(inspection_three_yrs = ifelse(RESULTS_OF_SCORE=="Evaluation needs to be conducted in 3 years", 1, 0))
+
+paste("Number of Building with Result of Evaluation Needs to be Conducted in 3 years:", sum(york_south_weston$inspection_three_yrs))
+
+# Calculating the percentage of that particular buildings
+paste("Percentage of Number of Building with Result of Evaluation Needs to be Conducted in 3 years (%):", ((sum(york_south_weston$inspection_three_yrs))/dim(york_south_weston)[1])*100)
+```
+
+The number of building with result of "Evaluation Needs to be Conducted in 3 years is 79 with percentage of 9.44% of the total building recorded within York South-Weston Ward.
+
+### Checking for the oldest building in York South-Weston ward and its overall score
+
+```{r checking the oldest building}
+# Checking for the oldest building in York South-Weston Ward
+oldest <- york_south_weston[which.min(york_south_weston$YEAR_BUILT),]
+oldest
+
+# Extracting the Overall Evaluation Score for this building
+paste("Overall evaluation score for the oldest building in York South-Weston:", oldest$SCORE)
+```
+
+The oldest registered building in York South-Weston is building with RSN 4155112 which was built in 1915. Even though the building is old, but the building is performing good with overall score of 72.
+
+### Using `lubridate` library to create new column called **season**
+
+```{r creating new column}
+# Creating new column named season
+york_south_weston <- york_south_weston %>%
+  mutate(season1 = quarter(
+  york_south_weston$EVALUATION_COMPLETED_ON,
+  type = "quarter",
+  fiscal_start = 1,
+))
+york_south_weston$season1 <- as.factor(york_south_weston$season1)
+
+# Renaming the season
+york_south_weston <- york_south_weston %>%
+  mutate(season = ifelse(season1==1,"Winter",
+                                ifelse(season1==2,"Spring", 
+                                       ifelse(season1==3, "Summer", ifelse(season1==4, "Fall", 0)))))
+
+# Removing intermediary column
+york_south_weston <- york_south_weston %>%
+  select(-season1)
+
+```
+
+### plotting the barplot to show the number of evaluation done in each season
+
+```{r plotting barplot of evaluation, warning = FALSE, message = FALSE, fig.align='center'}
+ggplot(york_south_weston, aes(reorder(season, table(season)[season]))) +
+  geom_bar(fill=c("#009E73","#F0E442","#0072B2","#D55E00"))+
+  theme_classic() + 
+  coord_flip() +
+  ggtitle("Total Cumulative Number of Inspections per Season") + 
+  xlab("Season") + 
+  ylab("Cumulative Inspections")
+
+```
+
+The barplot above showed that the number of inspection was highest during Fall season. One possible explanation is that the fall season is a time when students often return to the city for the beginning of the school year, which could explain why building inspections are more common during this time. Since there may be higher demand for rental housing in the fall, landlords may be more inclined to perform repairs and upgrades on their rental units in order to attract new tenants. This may result in a greater number of requests for inspections during the fall season.
+
+### Plotting property types vs graffiti ratings on a ggplot barplot
+
+```{r plotting property types and graffiti, warning = FALSE, message = FALSE, fig.align='center'}
+# Changing property type variable from character to categorical
+york_south_weston$PROPERTY_TYPE <- as.factor(york_south_weston$PROPERTY_TYPE)
+
+# Plotting barplot
+ggplot(york_south_weston, aes(x = reorder(PROPERTY_TYPE, GRAFFITI), y = GRAFFITI)) +
+  geom_bar(stat = "summary", fill=c("#009E73","#F0E442","#0072B2"))+
+  theme_classic() + 
+  coord_flip() + 
+  ggtitle("Graffiti Rating per Property Types") + 
+  xlab("Property Type") + 
+  ylab("Mean of Graffiti Rating")
+
+```
+
+The bar plot showed that the Private and Social Housing type of property has less graffiti than TCHC property, with mean of Graffiti rating at 4.6 for both Private and Social Housing. Some possible explanations on why TCHC has lower graffiti rating is that TCHC properties tend to be more densely populated than other types of properties, which may make them more attractive targets for graffiti vandals. Another thing is that TCHC properties are often located in high-traffic areas or areas with high levels of foot traffic. This may make them more visible and therefore more likely to be targeted by vandals.
+
+### Plotting a histogram to show the distribution of *SCORE* variable
+
+```{r plotting histogram of score, fig.align='center'}
+ggplot(york_south_weston, aes(x=SCORE)) + 
+  geom_histogram(aes(y = ..density..), color = "black", fill = "white", bins=20) +
+  geom_density(alpha = 0.2, fill = "orange", color="orange2") +  
+  theme_classic() +
+  ggtitle("Building Overall Score Histogram") + 
+  xlab("Score") + 
+  ylab("Density/Frequency")
+
+```
+
+The histogram plot above showed that the *SCORE* variable is normally distributed with no observable heavy tail in both right or left.
+
+### Plotting a histogram to show the distribution of *GRAFFITI* variable
+
+```{r plotting histogram of graffiti, warning = FALSE, message = FALSE, fig.align='center'}
+ggplot(york_south_weston, aes(x=GRAFFITI)) + 
+  geom_histogram(aes(y = ..density..), color = "black", fill = "tomato", bins=5) +
+  theme_classic() +
+  ggtitle("Building Graffiti Rating Histogram") + 
+  xlab("Graffiti Rating") + 
+  ylab("Density/Frequency")
+```
+
+The histogram plot above showed the distribution of *GRAFFITI* variables. The distribution is skewed the the left with the majority of the value lies between 4-5.
+
+### Creating faceted histogram between *SCORE* and *RESULT_OF_SCORE* variables
+
+```{r faceting histogram, fig.align='center'}
+ggplot(york_south_weston, aes(x = SCORE, fill = RESULTS_OF_SCORE)) +
+  geom_histogram(binwidth = 5, color = "black", position = "dodge") +
+  facet_wrap(~RESULTS_OF_SCORE, ncol = 2) +
+  labs(title = "Faceted Histograms of Score by Results of Score", x = "Score", y = "Frequency", fill = "RESULTS_OF_SCORE")+theme(legend.position="None")
+```
+The faceted histogram of *SCORE* on the *RESULT_OF_SCORE* variables showed four facets of the *SCORE* distribution based on each category on the *RESULT_OF_SCORE* variables. The connection between *SCORE* value and the *RESULT_OF_SCORE* outcome is that the higher the score value is, the longer the next evaluation would be conducted. While the *SCORE* itself previously is normally distributed, all of the value from each facets in this histogram if combined will form a normal distribution with **Building Audit** resides in the left tail, **Evaluation needs to be conducted in 3 years** resides in the right tail, and both **Evaluation needs to be conducted in 1 years** and **Evaluation needs to be conducted in 2 years** resides in the middle of the normal distribution, constituting the majority of the data points within the *SCORE* variable. 
+
+### Filtering York South-Weston dataset to only include properties from five most common address
+
+
+Creating a separate dataframe to check for the 5 most common address within the *york_south-weston* ward.
+
+```{r creating address dataframe}
+# Changing SITE_ADDRESS variable from character to categorical
+york_south_weston$SITE_ADDRESS <- as.factor(york_south_weston$SITE_ADDRESS)
+
+# use table() function to get frequency counts and sort it
+street_frequency <- table(york_south_weston$SITE_ADDRESS) %>% sort(decreasing=TRUE)
+
+# select the top 5 most common streets
+top_5_street <- data.frame(head(street_frequency, n = 5))
+top_5_street
+```
+
+The 5 most common streets in York South-Weston dataset are **101 HUMBER BLVD**, **1570 JANE ST**, **1619 LAWRENCE AVE W**, **1306 WESTON RD**, and **137 WOODWARD AVE**
+
+Creating new dataframe by filtering *york_south_weston* dataset to include only properties from the 5 most common streets in York South-Weston.
+
+```{r creating common address for york south weston}
+# Filtering the york_south_weston to only include properties from 5 most common streets
+york_south_weston_5streets <- york_south_weston %>%
+  filter(SITE_ADDRESS %in% top_5_street[,1])
+
+# Checking whether the filtered dataset only contains SITE_ADDRESS value from top_5_street
+unique(york_south_weston_5streets$SITE_ADDRESS)
+
+# The new dataset containing only properties from 5 most common streets in York South-Weston is now ready to be used
+```
+
+```{r plotting scatterplot, fig.align='center'}
+# Creating scatterplot for YEAR_BUILT vs SCORE
+ggplot(york_south_weston_5streets, aes(x=YEAR_BUILT, y=SCORE, color=SITE_ADDRESS))+
+  geom_point(size=3.5)+
+  scale_color_brewer(palette="Dark2")+
+  theme_light()+
+  ggtitle("Building Year Built vs Overall Score") + 
+  xlab("Year Built") + 
+  ylab("Score")
+```
+
+The scatterplot above showed the relation between *SCORE* and *YEAR_BUILT* variables. The plot showed the tendency that the "younger" the building is, the higher the overall score it gets even though might not be so obvious (weak correlation). Another interesting takeaway is that each street hosts building that was built on the same year! For example, **137 WOODWARD AVE** hosts only the building that was built on 1954 while **101 HUMBER BLVD** only hosts building that was built on 1969! it seems that during those era, the development of the city was gradually increasing and when the new, thus younger, road was built, the new building was also built on that new road.
+
+## Overlay Toronto York South-Weston Ward in Map Format
+
+```{r overlay york south weston in map, warning=FALSE, message=FALSE, fig.align='center'}
+m <- leaflet() %>% addTiles() %>% addCircles(lng=york_south_weston$LONGITUDE, lat= york_south_weston$LATITUDE)
+m # Print the map
+```
+
+## Overlay Toronto York South-Weston Ward in Map Format 2 NASAGIBS.ViirsEarthAtNight2012.
+
+```{r another map, warning=FALSE, message=FALSE, fig.align='center'}
+m1 <- leaflet() %>% addTiles() %>% addCircles(lng=york_south_weston$LONGITUDE , lat= york_south_weston$LATITUDE ) %>%
+addProviderTiles(providers$NASAGIBS.ViirsEarthAtNight2012)
+m1 # Print the map
 ```
