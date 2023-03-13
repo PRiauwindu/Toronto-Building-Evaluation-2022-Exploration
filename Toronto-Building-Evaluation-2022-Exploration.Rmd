@@ -5,10 +5,16 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
     encoding=encoding,
     output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+<<<<<<< HEAD
+=======
+author: "Putranegara Riauwindu"
+date: "2023-03-12"
+>>>>>>> f5427634eaaf6d4ee69d8557fd38acac5b2988e0
 output: html_document
 includes:
 in_header: googleanalytics.html
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -33,8 +39,18 @@ library(leaflet)
 Importing Toronto Dataset and Checking the overall structure of the dataset using `str()` function. The dataset is also publicly available for download at https://open.toronto.ca/dataset/apartment-building-evaluation/ 
 
 ```{r Importing dataset}
+<<<<<<< HEAD
 data <- read.csv("apartments_toronto.csv")
 str(data)
+=======
+data <- read.csv("D:/0. Master Degree/1. Boston University MSABA 2022/0. Semester Courses/2. Spring 2023/4. AD699 Data Mining/Assignment/Assignment 1/apartments_toronto.csv")
+```
+
+```{r Examining dataset}
+str(data)
+paste("Toronto dataset dimension (rows):", dim(data)[1])
+paste("Toronto dataset dimension (columns):", dim(data)[2])
+>>>>>>> f5427634eaaf6d4ee69d8557fd38acac5b2988e0
 ```
 
 `str()` function returned the "structure" information about the Toronto apartments dataset, including its type and content, and provides a concise way to examine the properties of the Toronto Apartment dataset. The Toronto apartments dataset contains **11651 observations (rows) and 40 variables (columns)**
@@ -45,9 +61,21 @@ For this analysis, i will focus on the York South-Weston ward in Toronto.Filteri
 # Changing the ward attribute into categorical
 data$WARDNAME <- as.factor(data$WARDNAME)
 
+<<<<<<< HEAD
 # Filtering the data and ensuring that the data only contain York South-Weston ward
 york_south_weston <- data %>%
   filter(WARDNAME=="York South-Weston")
+=======
+# Checking ward unique values to ensure correct ward spelling
+unique(data$WARDNAME)
+
+# Filtering the data and ensuring that the data only contain York South-Weston ward
+york_south_weston <- data %>%
+  filter(WARDNAME=="York South-Weston")
+summary(york_south_weston$WARDNAME)
+paste("York South-Weston data rows:", dim(york_south_weston)[1])
+paste("York South-Weston data columns:", dim(york_south_weston)[2])
+>>>>>>> f5427634eaaf6d4ee69d8557fd38acac5b2988e0
 ```
 
 The filtered data *york_south_weston* only contains York South-Weston ward data and has **836 observation(rows) and 40 attributes(columns)**
@@ -73,6 +101,13 @@ The total number of NA value in York South-Weston dataset is calculated to be **
 
 Variables with missing values are: *YEAR_REGISTERED*, *YEAR_EVALUATED*, *YEAR_BUILT*, *LAUNDRY_ROOMS*, *GARBAGE_CHUTE_ROOMS*, *ELEVATORS*, *STORAGE_AREAS_LOCKERS*, *GRAFFITI*, *EXTERIOR_GROUNDS*, *BALCONY_GUARDS*, *WATER_PEN_EXT_BLDG_ELEMENTS*, *PARKING AREA*, *OTHER_FACILITIES*, *LATITUDE*, *LONGITUDE*, *X*, and *Y*.
 
+<<<<<<< HEAD
+=======
+```{r Isolating variables with NA value}
+york_south_weston_na[york_south_weston_na$count_na > 0,]
+```
+
+>>>>>>> f5427634eaaf6d4ee69d8557fd38acac5b2988e0
 Three selected columns with missing values, *YEAR_REGISTERED*, *YEAR_EVALUATED*, *YEAR_BUILT*, might be missing possibly due to the building is quite old in terms of age so that there was no proper documentation in terms of when it was build and when it was actually registered to the government. The other possible explanation might be because of the human error (forget to note the registration, evaluation, and built year).
 
 The NAs value could also be visualized using the `naniar` and `visdat` library
