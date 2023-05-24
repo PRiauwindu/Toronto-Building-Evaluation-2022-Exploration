@@ -4,7 +4,7 @@ GitHub Pages: https://priauwindu.github.io/Toronto-Building-Evaluation-2022-Expl
 
 ## Description:
 
-Toronto, York South-Weston Ward Building Insights is a comprehensive GitHub repository that offers a meticulous exploration of the safety and compliance of buildings within the York South-Weston Ward in Toronto. Developed in collaboration with the City of Toronto's Building Evaluation program, this repository aims to provide valuable insights and analysis of the 2022 evaluation results specific to the York South-Weston Ward.
+Toronto, York South-Weston Ward Building Insights is a comprehensive GitHub repository that offers a meticulous exploration of the safety and compliance of buildings within the York South-Weston Ward in Toronto. Developed using City of Toronto's Building Evaluation program results in year 2022, this repository aims to provide valuable insights and analysis of the 2022 evaluation results specific to the York South-Weston Ward.
 
 ## Objective
 
