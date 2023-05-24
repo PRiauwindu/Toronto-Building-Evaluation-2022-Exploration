@@ -32,8 +32,10 @@ We welcome contributions from the GitHub community to further enhance the Toront
 
 Together, we can collaboratively drive positive change by leveraging data-driven insights to improve building safety practices, inform policy decisions, and foster a secure environment for the residents of the York South-Weston Ward.
 
-If you find this repository useful, you may replicate the code here to assist your projects/works but dont forget to properly cite this repository in your work.
+## Usage and Citation:
 
-Thank you!
+If you find this repository useful, you are welcome to replicate the code for your own projects or works. However, kindly ensure that you properly cite this repository in your work to acknowledge the source.
 
-Putranegara Riauwindu
+Thank you for your interest in the Toronto, York South-Weston Ward Building Insights repository!
+
+Author: Putranegara Riauwindu
