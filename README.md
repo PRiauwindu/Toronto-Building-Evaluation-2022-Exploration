@@ -2,13 +2,15 @@
 
 GitHub Pages: 
 
-# Introduction
+## Introduction
 
 The Toronto Building Evaluation is a program by the City of Toronto that assesses the safety and compliance of buildings in the city. The program involves regular inspections of buildings to identify potential safety hazards, and the results are published annually to provide valuable information for building owners, tenants, and the public. The data from these evaluations can be used to identify areas of improvement and potential concerns and can help inform policy decisions related to building safety and compliance in Toronto. 
 
-# Objective
+## Objective
 
-# Analysis Results
+To explore the Toronto Building Evaluation result in year 2022 to gain insights into the trends and patterns surrounding the building and its neighborhood.
+
+## Analysis Results
 
 Through my exploration of the Toronto Building Evaluation Result 2022, I gained a deep understanding of the safety and compliance of buildings in the city. By analyzing the data using a range of statistical and visualization techniques, I was able to identify patterns and trends that shed light on potential areas of improvement and concerns.
 
