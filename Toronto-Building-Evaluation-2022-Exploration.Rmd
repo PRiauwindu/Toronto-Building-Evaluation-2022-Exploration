@@ -15,6 +15,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Introduction
+
+Toronto, York South-Weston Ward Building Insights is a comprehensive GitHub repository that offers a meticulous exploration of the safety and compliance of buildings within the York South-Weston Ward in Toronto. Developed using City of Toronto's Building Evaluation program results in year 2022, this repository aims to provide valuable insights and analysis of the 2022 evaluation results specific to the York South-Weston Ward.
+
+The primary objective of this repository is to empower stakeholders, including building owners, tenants, policymakers, and the general public within the York South-Weston Ward, with actionable knowledge about building safety and compliance. Through statistical techniques and immersive visualizations, the aim is to uncover significant trends and patterns, enabling informed decision-making and policy development at a local level.
+
 ## Data Exploration and Visualization
 
 Importing relevant libraries
@@ -40,7 +46,7 @@ str(data)
 
 `str()` function returned the "structure" information about the Toronto apartments dataset, including its type and content, and provides a concise way to examine the properties of the Toronto Apartment dataset. The Toronto apartments dataset contains **11651 observations (rows) and 40 variables (columns)**
 
-For this analysis, i will focus on the York South-Weston ward in Toronto.Filtering the dataset using `filter()` function to only contain the York South-Weston ward
+Filtering the dataset using `filter()` function to only contain the York South-Weston ward
 
 ```{r Filtering Dataset}
 # Changing the ward attribute into categorical
@@ -66,6 +72,7 @@ york_south_weston_na
 # Summing the NAs value in the York South-Weston dataset
 paste("The sum of the NA values in york_south_weston is:", sum(york_south_weston_na$count_na))
 ```
+
 The above results returned the tabulated NAs value in each of the attributes within the dataset. This was done by applying `is.na()` function in conjunction with `sum` function, and using `apply` function with `MARGIN=2` to apply it to the entire attributes. The `is.na` function will return the Boolean result whether each row in the dataset equals to NA value or not.
 
 The percentage of NA value in each attribute was also presented in the table above by dividing the total NA value with the total observation within that specific attributes.
@@ -97,6 +104,7 @@ york_south_weston <- york_south_weston %>%
 #Checking whether the columns have been removed
 colnames(york_south_weston)
 ```
+
 The four columns with missing value percentage >50% have been removed from the dataset.
 
 Based on the dataset description, column *EVALUATION_COMPLETED_ON* contains date type of data, bu R classified the type of the data within the column as **character(chr)** type. Conversion needs to be performed first before moving further with the dataset analysis. 
@@ -107,6 +115,7 @@ Below code is used to convert the data type in column *EVALUATION_COMPLETED_ON* 
 york_south_weston$EVALUATION_COMPLETED_ON <- as.Date(york_south_weston$EVALUATION_COMPLETED_ON, format = "%Y-%m-%d")
 str(york_south_weston$EVALUATION_COMPLETED_ON)
 ```
+
 The *EVALUATION_COMPLETED_ON* variable have been converted to dates format.
 
 Now that the dataset has been cleaned and tidied, lets do some quick data exploration. Since my birth month is January, i am interested to see how many inspections were done at York South-Weston ward on January. Below code is used to find the number of inspection done in York South-Weston ward apartments on January:
@@ -118,6 +127,7 @@ york_south_weston <- york_south_weston %>%
 
 paste("Number of Inspection on January:", sum(york_south_weston$jan_inspection))
 ```
+
 There were **60 inspections** made on January for the Apartment in Toronto.
 
 ### Checking Summary Statistics
@@ -267,10 +277,10 @@ ggplot(york_south_weston, aes(x = SCORE, fill = RESULTS_OF_SCORE)) +
   facet_wrap(~RESULTS_OF_SCORE, ncol = 2) +
   labs(title = "Faceted Histograms of Score by Results of Score", x = "Score", y = "Frequency", fill = "RESULTS_OF_SCORE")+theme(legend.position="None")
 ```
+
 The faceted histogram of *SCORE* on the *RESULT_OF_SCORE* variables showed four facets of the *SCORE* distribution based on each category on the *RESULT_OF_SCORE* variables. The connection between *SCORE* value and the *RESULT_OF_SCORE* outcome is that the higher the score value is, the longer the next evaluation would be conducted. While the *SCORE* itself previously is normally distributed, all of the value from each facets in this histogram if combined will form a normal distribution with **Building Audit** resides in the left tail, **Evaluation needs to be conducted in 3 years** resides in the right tail, and both **Evaluation needs to be conducted in 1 years** and **Evaluation needs to be conducted in 2 years** resides in the middle of the normal distribution, constituting the majority of the data points within the *SCORE* variable. 
 
 ### Filtering York South-Weston dataset to only include properties from five most common address
-
 
 Creating a separate dataframe to check for the 5 most common address within the *york_south-weston* ward.
 
