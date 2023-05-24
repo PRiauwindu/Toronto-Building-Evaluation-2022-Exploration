@@ -1,20 +1,39 @@
-# Toronto-Building-Evaluation-2022-Exploration
+# Toronto, York South-Weston Ward Building Insights
 
-GitHub Pages: 
+GitHub Pages: https://priauwindu.github.io/Toronto-Building-Evaluation-2022-Exploration/ 
 
-## Introduction
+## Description:
 
-The Toronto Building Evaluation is a program by the City of Toronto that assesses the safety and compliance of buildings in the city. The program involves regular inspections of buildings to identify potential safety hazards, and the results are published annually to provide valuable information for building owners, tenants, and the public. The data from these evaluations can be used to identify areas of improvement and potential concerns and can help inform policy decisions related to building safety and compliance in Toronto. 
+Toronto, York South-Weston Ward Building Insights is a comprehensive GitHub repository that offers a meticulous exploration of the safety and compliance of buildings within the York South-Weston Ward in Toronto. Developed in collaboration with the City of Toronto's Building Evaluation program, this repository aims to provide valuable insights and analysis of the 2022 evaluation results specific to the York South-Weston Ward.
 
 ## Objective
 
-To explore the Toronto Building Evaluation result in year 2022 to gain insights into the trends and patterns surrounding the building and its neighborhood.
+The primary objective of this repository is to empower stakeholders, including building owners, tenants, policymakers, and the general public within the York South-Weston Ward, with actionable knowledge about building safety and compliance. Through statistical techniques and immersive visualizations, the aim is to uncover significant trends and patterns, enabling informed decision-making and policy development at a local level.
 
-## Analysis Results
+## Analytical Discoveries
 
-Through my exploration of the Toronto Building Evaluation Result 2022, I gained a deep understanding of the safety and compliance of buildings in the city. By analyzing the data using a range of statistical and visualization techniques, I was able to identify patterns and trends that shed light on potential areas of improvement and concerns.
+By delving deep into the Toronto Building Evaluation Result 2022 within the York South-Weston Ward, some fascinating insights have been extracted that shed light on the state of building safety and compliance within this specific area. Our meticulous analysis has yielded the following discoveries:
 
-My analysis of the data revealed some interesting insights. For example, I found that certain types of buildings were more likely to have compliance issues than others, and that some areas of the city had a higher percentage of unsafe buildings. I also discovered that there were some common themes among the types of violations found, such as fire safety and structural issues.
+1. Building Types: Gain a nuanced understanding of compliance issues across different types of buildings within the York South-Weston Ward. Our analysis reveals distinct variations that can guide targeted strategies to enhance safety and compliance measures at a local level.
 
-Overall, my exploration of the Toronto Building Evaluation Result 2022 was a fascinating and informative experience. By digging deep into the data and drawing on my analytical skills, I was able to gain a nuanced understanding of the state of building safety and compliance in the city. I believe that my findings will be of interest to a wide range of stakeholders, and could help inform policy decisions and improve building safety in Toronto.
+2. Neighborhood Focus: Explore the geographical distribution of unsafe buildings within the York South-Weston Ward. Uncover specific areas with a higher prevalence of safety concerns, enabling informed interventions and focused improvement efforts within this community.
 
+3. Common Violations: Identify recurring violations found during evaluations within the York South-Weston Ward, with a particular emphasis on fire safety and structural concerns. These insights highlight the need for proactive measures and informed policy decisions to address these prevalent issues effectively within this specific area.
+
+## How to Contribute:
+
+We welcome contributions from the GitHub community to further enhance the Toronto, York South-Weston Ward Building Insights repository. Whether you're a data scientist, developer, or domain expert, you can contribute by:
+
+- Refining existing analyses and visualizations specific to the York South-Weston Ward
+- Implementing additional statistical techniques to uncover more insights within this local context
+- Expanding the repository to include historical data and longitudinal analyses for the York South-Weston Ward
+- Improving data visualization and user experience specific to this community
+- Conducting peer reviews and providing constructive feedback tailored to the York South-Weston Ward context
+
+Together, we can collaboratively drive positive change by leveraging data-driven insights to improve building safety practices, inform policy decisions, and foster a secure environment for the residents of the York South-Weston Ward.
+
+If you find this repository useful, you may replicate the code here to assist your projects/works but dont forget to properly cite this repository in your work.
+
+Thank you!
+
+Putranegara Riauwindu
